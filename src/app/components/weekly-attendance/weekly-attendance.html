@@ -1,0 +1,320 @@
+<div class="attendance-container p-4">
+    <!-- Header Section (Glassmorphism) -->
+    <div class="header-section mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="main-title mb-1">Weekly Attendance</h1>
+                <div class="d-flex align-items-center gap-2" *ngIf="gridData">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">
+                        {{ gridData.class.class_name }}
+                    </span>
+                    <span class="text-muted small">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        {{ gridData.period.start_date | date:'MMM d' }} — {{ gridData.period.end_date | date:'MMM d,
+                        yyyy' }}
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden" *ngIf="hasUnsavedChanges">
+                    <button class="action-btn btn-success px-4" (click)="submitAllChanges()" [disabled]="submitting">
+                        <i class="bi bi-cloud-upload me-2"></i> Save Changes
+                    </button>
+                    <button class="action-btn btn-danger px-3" (click)="cancelAllChanges()" [disabled]="submitting">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
+                <button class="action-btn btn-light shadow-sm" (click)="refresh()" [disabled]="loading || submitting">
+                    <i class="bi bi-arrow-clockwise fs-5"></i>
+                </button>
+                <button class="action-btn btn-premium-primary px-4" (click)="exportToExcel()" [disabled]="!gridData">
+                    <i class="bi bi-download me-2"></i> Export Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Smart Controls Grid -->
+        <div class="controls-card mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted ps-2">Class Roster</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3"><i
+                                class="bi bi-people text-muted"></i></span>
+                        <select class="modern-select form-select border-start-0 rounded-end-pill"
+                            [(ngModel)]="selectedClassId" (change)="onClassChange()" [disabled]="loading">
+                            <option *ngFor="let c of classes" [value]="c.class_id">{{ c.class_code }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted ps-2">Start Date</label>
+                    <input type="date" class="modern-input form-control rounded-pill" [(ngModel)]="startDate"
+                        (change)="onDateChange()" [disabled]="loading">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted ps-2">End Date</label>
+                    <input type="date" class="modern-input form-control rounded-pill" [(ngModel)]="endDate"
+                        (change)="onDateChange()" [disabled]="loading">
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <div class="btn-group w-100 shadow-sm rounded-pill overflow-hidden">
+                        <button class="btn btn-light border-0 py-2" (click)="previousWeek()" title="Previous Week">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-light border-0 py-2 fw-bold"
+                            (click)="resetToCurrentWeek()">Today</button>
+                        <button class="btn btn-light border-0 py-2" (click)="nextWeek()" title="Next Week">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="search-wrapper d-flex align-items-center px-3">
+                    <i class="bi bi-search text-muted me-2"></i>
+                    <input type="text" class="search-input form-control py-2 shadow-none" [(ngModel)]="searchQuery"
+                        placeholder="Quick search students...">
+                    <button *ngIf="searchQuery" class="btn border-0 text-muted p-0 ms-2" (click)="clearSearch()">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Action Overlay (Floating UI) -->
+    <div *ngIf="showBulkSelectionPanel && currentBulkDate"
+        class="bulk-action-panel animate__animated animate__fadeInUp position-fixed bottom-0 start-50 translate-middle-x mb-4 shadow-lg p-3 bg-dark text-white rounded-5 d-flex align-items-center gap-3 z-3">
+        <div class="d-flex flex-column border-end pe-3 border-secondary">
+            <span class="small text-muted fw-bold">SET ATTENDANCE FOR</span>
+            <span class="fw-bold">{{ currentBulkDate | date:'EEEE, MMM d' }}</span>
+        </div>
+
+        <select class="form-select form-select-sm bg-secondary border-0 text-white rounded-pill px-3"
+            [(ngModel)]="getBulkSelectionState(currentBulkDate)!.selectedStatus">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-light rounded-pill px-3"
+                (click)="selectAllStudents(currentBulkDate)">All Classes</button>
+            <span class="badge bg-primary d-flex align-items-center px-3 rounded-pill">
+                {{ getSelectedStudentCount(currentBulkDate) }} Selected
+            </span>
+        </div>
+
+        <button class="btn btn-primary rounded-pill px-4 fw-bold" (click)="applyBulkAttendance(currentBulkDate)"
+            [disabled]="getSelectedStudentCount(currentBulkDate) === 0">
+            Apply Now
+        </button>
+
+        <button class="btn btn-link text-white-50 p-0 ms-2" (click)="cancelBulkSelection(currentBulkDate)">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status text-center"></div>
+        <h4 class="mt-4 fw-bold text-primary">Preparing your roster...</h4>
+        <p class="text-muted">Synchronizing data with the secure server.</p>
+    </div>
+
+    <!-- Attendance Roster Card -->
+    <div *ngIf="!loading && gridData" class="attendance-card animate__animated animate__fadeIn">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 attendance-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 50px;">#</th>
+                        <th class="student-info-col">Student Identity</th>
+                        <th class="text-center" style="width: 60px;">G</th>
+
+                        <!-- Date Dynamic Columns -->
+                        <th *ngFor="let date of gridData.period.dates" class="text-center"
+                            [class.today-col]="isToday(date)">
+                            <div class="date-header">
+                                <span class="day-name opacity-50">{{ date | date:'EEE' | uppercase }}</span>
+                                <span class="day-num">{{ date | date:'dd' }}</span>
+                            </div>
+
+                            <!-- Subject Selector (Subtle) -->
+                            <div class="mt-2 px-2">
+                                <select class="form-select border-0 bg-light small py-1 px-2 rounded-3 text-muted"
+                                    style="font-size: 0.65rem;" [value]="getSelectedSubjectId(date)"
+                                    (change)="onSubjectChange(date, +$any($event.target).value)">
+                                    <option *ngFor="let s of subjects" [value]="s.subject_id">{{ s.subject_name }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Click to Launch Bulk -->
+                            <button class="btn btn-link btn-sm mt-1 text-primary p-0 shadow-none"
+                                (click)="toggleBulkSelection(date)"
+                                [title]="isBulkSelectionActive(date) ? 'Exit Bulk Edit' : 'Enter Bulk Edit'">
+                                <i class="bi" [class.bi-lightning-charge]="!isBulkSelectionActive(date)"
+                                    [class.bi-lightning-charge-fill]="isBulkSelectionActive(date)"></i>
+                            </button>
+                        </th>
+
+                        <th class="text-center bg-light fw-bold text-muted border-start" style="width: 100px;">Activity
+                        </th>
+                        <th class="text-center bg-light fw-bold text-muted" style="width: 80px;">Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let student of getFilteredStudents()" class="student-row">
+                        <td class="ps-4 text-muted small fw-bold">{{ student.row_number }}</td>
+                        <td class="student-info-col">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3 bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle"
+                                    style="width: 40px; height: 40px; font-size: 0.8rem;">
+                                    {{ (student.student_name_eng.split(' ')[0][0] || '') +
+                                    (student.student_name_eng.split(' ').slice(-1)[0][0] || '') }}
+                                </div>
+                                <div>
+                                    <div class="student-name-eng"
+                                        [innerHTML]="highlightSearch(student.student_name_eng)"></div>
+                                    <div class="student-name-kh" [innerHTML]="highlightSearch(student.student_name_kh)">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge rounded-circle p-2"
+                                [ngClass]="student.gender === 'Male' ? 'bg-primary-subtle text-primary' : 'bg-danger-subtle text-danger'">
+                                <i [ngClass]="getGenderIconClass(student.gender)"></i>
+                            </span>
+                        </td>
+
+                        <!-- Master Attendance Cells -->
+                        <td *ngFor="let date of gridData.period.dates" class="attendance-cell"
+                            [class]="getStatusClass(getDailyStatus(student, date))"
+                            [class.pending]="hasPendingChanges(student.student_id, date)"
+                            [class.bulk-mode-active]="isBulkSelectionActive(date)"
+                            (click)="onCellClick(student.student_id, date)">
+
+                            <div class="cell-content">
+                                <!-- Regular Icon View -->
+                                <span class="status-symbol fw-bold" *ngIf="!isBulkSelectionActive(date)">
+                                    {{ getStatusSymbol(getDailyStatus(student, date)) }}
+                                </span>
+
+                                <!-- Bulk Checkbox Component -->
+                                <div *ngIf="isBulkSelectionActive(date)" class="form-check m-0">
+                                    <input class="form-check-input border-secondary custom-checkbox" type="checkbox"
+                                        [checked]="isStudentSelected(date, student.student_id)"
+                                        (click)="$event.stopPropagation()">
+                                </div>
+
+                                <!-- Detail Indicator -->
+                                <div *ngIf="hasMultipleSubjectRecords(student, date)"
+                                    class="position-absolute top-0 end-0 m-1"
+                                    (click)="showAttendanceDetail(student, date); $event.stopPropagation()">
+                                    <span class="dot-indicator bg-info"></span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Student Performance Columns -->
+                        <td class="text-center border-start">
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex gap-2">
+                                    <span class="stat-badge bg-p" title="Present">{{ student.statistics.present
+                                        }}</span>
+                                    <span class="stat-badge bg-a" title="Absent">{{ student.statistics.absent }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="fw-bold" [ngClass]="getAttendanceRateColor(student.statistics.attendance_rate)">
+                                {{ student.statistics.attendance_rate }}
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Performance Benchmark Row -->
+                    <tr class="table-light shadow-sm">
+                        <td colspan="3" class="text-end pe-4 py-4"><span class="fw-bold text-muted">Daily Success
+                                Rate</span></td>
+                        <td *ngFor="let date of gridData.period.dates" class="text-center py-4">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-success" style="font-size: 0.9rem;">{{
+                                    gridData.daily_statistics[date]?.present }}</span>
+                                <div class="progress mt-1" style="height: 3px; width: 30px; margin: 0 auto;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        [style.width]="(gridData.daily_statistics[date]?.present / gridData.overall_statistics.total_students * 100) + '%'">
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td colspan="2" class="text-center py-4 border-start bg-primary text-white rounded-end">
+                            <div class="small fw-bold opacity-75">CLASS AVG</div>
+                            <div class="h4 fw-bold mb-0">{{ gridData.overall_statistics.attendance_rate }}</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Detail Lens Modal -->
+    <div class="modal fade show" *ngIf="showDetailModal"
+        style="display: block; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header d-flex flex-column align-items-start border-0">
+                    <div class="d-flex justify-content-between w-100 mb-3">
+                        <span class="badge bg-white text-primary rounded-pill px-3 fw-bold">SUBJECT LOG</span>
+                        <button type="button" class="btn-close btn-close-white" (click)="closeDetailModal()"></button>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle p-3 me-3 text-primary shadow-sm">
+                            <i class="bi bi-person-badge fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="modal-title text-white fw-bold">{{ detailModalData.student.student_name_eng }}
+                            </h3>
+                            <p class="text-white-50 mb-0"><i class="bi bi-calendar-event me-2"></i>{{
+                                detailModalData.date | date:'MMMM d, yyyy' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body p-5">
+                    <h6 class="text-muted fw-bold mb-4">DETAILED SUBJECT RECORDS</h6>
+                    <div class="subject-timeline">
+                        <div *ngFor="let record of detailModalData.subjects"
+                            class="d-flex justify-content-between align-items-center mb-4 p-3 rounded-4 bg-light border-start border-4"
+                            [class.border-success]="record.status === 'Present'"
+                            [class.border-danger]="record.status === 'Absent'">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 fs-3 text-secondary"><i class="bi bi-journal-text"></i></div>
+                                <div>
+                                    <div class="fw-bold h6 mb-1">{{ record.subject_name }}</div>
+                                    <div class="text-muted small" *ngIf="record.notes">{{ record.notes }}</div>
+                                    <div class="text-muted small" *ngIf="!record.notes">No specific notes recorded</div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-end">
+                                <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusClass(record.status)">{{
+                                    record.status }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-5 py-3 fw-bold shadow-sm w-100"
+                        (click)="closeDetailModal()">
+                        Dismiss Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

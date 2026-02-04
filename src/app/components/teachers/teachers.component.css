@@ -1,0 +1,37 @@
+.card {
+    transition: all 0.3s ease;
+}
+
+.table thead th {
+    border-bottom: 0;
+    letter-spacing: 0.5px;
+}
+
+.avatar img {
+    border: 2px solid white;
+}
+
+.shadow-xs {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Icon Buttons */
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.content-header h1 {
+    letter-spacing: -0.5px;
+}

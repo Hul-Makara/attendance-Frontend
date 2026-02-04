@@ -1,0 +1,146 @@
+<div class="content-header mb-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold">Dashboard</h1>
+                <p class="text-secondary small">Real-time overview of the system metrics</p>
+            </div>
+            <div class="col-sm-6 text-end">
+                <button class="btn btn-light shadow-sm btn-sm me-2" (click)="loadDashboardStats()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Stat Box Row (Loading) -->
+    <div class="row" *ngIf="loading()">
+        <div class="col-lg-3 col-6" *ngFor="let item of [1,2,3,4]">
+            <div class="small-box bg-white shadow-sm rounded-4 overflow-hidden p-4 text-center">
+                <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                <p class="text-secondary small mt-2">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Box Row (Ready) -->
+    <div class="row" *ngIf="!loading()">
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-primary shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="inner p-4">
+                    <h3 class="fw-bold">{{ totalStudents() }}</h3>
+                    <p>Total Students</p>
+                </div>
+                <div class="icon position-absolute top-50 end-0 translate-middle-y opacity-25 pe-3">
+                    <i class="bi bi-people-fill fs-1"></i>
+                </div>
+                <a routerLink="/students"
+                    class="small-box-footer bg-dark-subtle text-decoration-none p-2 d-block text-center text-white">
+                    View Details <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="inner p-4 text-white">
+                    <h3 class="fw-bold">{{ totalTeachers() }}</h3>
+                    <p>Total Teachers</p>
+                </div>
+                <div class="icon position-absolute top-50 end-0 translate-middle-y opacity-25 pe-3 text-white">
+                    <i class="bi bi-person-badge-fill fs-1"></i>
+                </div>
+                <a routerLink="/teachers"
+                    class="small-box-footer bg-dark-subtle text-decoration-none p-2 d-block text-center text-white">
+                    View Details <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="inner p-4">
+                    <h3 class="fw-bold">{{ totalClasses() }}</h3>
+                    <p>Total Classes</p>
+                </div>
+                <div class="icon position-absolute top-50 end-0 translate-middle-y opacity-25 pe-3">
+                    <i class="bi bi-door-open-fill fs-1"></i>
+                </div>
+                <a routerLink="/classes"
+                    class="small-box-footer bg-dark-subtle text-decoration-none p-2 d-block text-center text-dark fw-medium">
+                    View Details <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger shadow-sm rounded-4 overflow-hidden position-relative">
+                <div class="inner p-4 text-white">
+                    <h3 class="fw-bold">{{ attendanceRate() }}%</h3>
+                    <p>Attendance Rate</p>
+                </div>
+                <div class="icon position-absolute top-50 end-0 translate-middle-y opacity-25 pe-3 text-white">
+                    <i class="bi bi-calendar-check-fill fs-1"></i>
+                </div>
+                <a routerLink="/attendance"
+                    class="small-box-footer bg-dark-subtle text-decoration-none p-2 d-block text-center text-white">
+                    View Details <i class="bi bi-arrow-right-circle"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main row -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header border-0 bg-white py-3">
+                    <h3 class="card-title fw-bold">Attendance Analytics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <i class="bi bi-activity display-1 text-primary opacity-25"></i>
+                        <h5 class="mt-3 fw-bold">No Data Visuals Yet</h5>
+                        <p class="text-secondary small">Charts will be available once more attendance records are
+                            submitted.</p>
+                        <button class="btn btn-primary rounded-pill px-4 mt-2">Take Attendance</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header border-0 bg-white py-3">
+                    <h3 class="card-title fw-bold">Quick Actions</h3>
+                </div>
+                <div class="card-body d-grid gap-3">
+                    <div class="action-item d-flex align-items-center p-3 border rounded-4 hover-shadow"
+                        routerLink="/attendance">
+                        <div class="action-icon bg-primary-subtle p-3 rounded-circle me-3"><i
+                                class="bi bi-calendar2-check text-primary"></i></div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Mark Attendance</h6>
+                            <p class="text-secondary small mb-0">Record daily logs</p>
+                        </div>
+                    </div>
+                    <div class="action-item d-flex align-items-center p-3 border rounded-4 hover-shadow"
+                        routerLink="/students/upload">
+                        <div class="action-icon bg-info-subtle p-3 rounded-circle me-3"><i
+                                class="bi bi-cloud-upload text-info"></i></div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Import Students</h6>
+                            <p class="text-secondary small mb-0">Bulk Excel upload</p>
+                        </div>
+                    </div>
+                    <div class="action-item d-flex align-items-center p-3 border rounded-4 hover-shadow">
+                        <div class="action-icon bg-warning-subtle p-3 rounded-circle me-3"><i
+                                class="bi bi-file-earmark-pdf text-warning"></i></div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">System Reports</h6>
+                            <p class="text-secondary small mb-0">Export PDF logs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

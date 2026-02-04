@@ -1,0 +1,43 @@
+.text-gradient {
+    background: linear-gradient(45deg, #2c3e50, #4ca1af);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.bg-blue-subtle {
+    background-color: #e3f2fd;
+}
+
+.text-blue {
+    color: #1976d2;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+}
+
+.table thead th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.card {
+    border: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}

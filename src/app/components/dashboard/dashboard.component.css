@@ -1,0 +1,49 @@
+.small-box {
+    transition: transform 0.3s ease;
+}
+
+.small-box:hover {
+    transform: translateY(-5px);
+}
+
+.small-box .icon {
+    font-size: 4rem;
+    z-index: 0;
+}
+
+.small-box .inner {
+    z-index: 2;
+    position: relative;
+}
+
+.small-box-footer {
+    transition: background-color 0.2s;
+}
+
+.small-box-footer:hover {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.bg-primary {
+    background: var(--primary-gradient) !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+}
+
+.card {
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+}

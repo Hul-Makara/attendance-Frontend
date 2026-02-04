@@ -1,0 +1,54 @@
+:root {
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  --sidebar-dark: #0f172a;
+  --bg-subtle: #f8fafc;
+}
+/* Global Smoothness */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-subtle);
+}
+/* Premium Sidebar */
+/* .app-sidebar {
+  background: var(--sidebar-dark) !important;
+  border-right: 0;
+} */
+.brand-link {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 1.25rem !important;
+}
+.nav-link {
+  border-radius: 8px !important;
+  margin: 0.25rem 0.75rem !important;
+  transition: all 0.2s ease !important;
+}
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  transform: translateX(3px);
+}
+.nav-link.active {
+  background: var(--primary-gradient) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  color: white !important;
+}
+.nav-link.active i {
+  color: white !important;
+}
+/* Glassmorphism Header */
+.app-header {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+/* Content Area */
+.app-main {
+  background: var(--bg-subtle) !important;
+}
+/* UI Avatars / Images */
+.user-image {
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+.user-image:hover {
+  transform: scale(1.1);
+}

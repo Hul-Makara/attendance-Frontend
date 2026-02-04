@@ -1,0 +1,110 @@
+<!-- Content Header -->
+<div class="content-header mb-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold">Student Management</h1>
+                <p class="text-secondary small">Manage student records and admissions</p>
+            </div>
+            <div class="col-sm-6 text-end">
+                <!-- Hidden File Input -->
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls, .csv"
+                    style="display: none;">
+
+                <!-- Import Button -->
+                <button class="btn btn-outline-primary me-2 shadow-sm" (click)="fileInput.click()"
+                    [disabled]="uploading()">
+                    <i class="bi" [class.bi-upload]="!uploading()" [class.bi-arrow-repeat]="uploading()"></i>
+                    {{ uploading() ? ' Importing...' : ' Import Excel' }}
+                </button>
+                <!-- Export Button -->
+                <button class="btn btn-outline-success me-2 shadow-sm" (click)="exportToExcel()">
+                    <i class="bi bi-download"></i> Export Excel
+                </button>
+                <!-- Add Student Button -->
+                <button class="btn btn-primary shadow-sm">
+                    <i class="bi bi-person-plus-fill"></i> Add New Student
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Main Content -->
+<div class="container-fluid" *ngIf="showList()">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom-0">
+            <h3 class="card-title fw-bold text-dark">Student Admission List</h3>
+            <div class="card-tools d-flex gap-2">
+                <select class="form-select form-select-sm bg-light border-0" style="width: 120px;"
+                    (change)="genderFilter.set($any($event.target).value)">
+                    <option value="All">All Genders</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control bg-light border-0" placeholder="Search students..."
+                        (input)="onSearch($event)">
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Gender</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0" *ngIf="!loading()">
+                        <tr *ngFor="let s of filteredStudents()">
+                            <td class="ps-4 text-secondary">#{{ s.student_id }}</td>
+                            <td class="fw-bold">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar me-3">
+                                        <img [src]="'https://ui-avatars.com/api/?name=' + s.studentname_en + '&background=random'"
+                                            class="rounded-circle shadow-xs" width="38">
+                                    </div>
+                                    <div>
+                                        <div class="text-dark">{{ s.studentname_en }}</div>
+                                        <div class="text-muted small khmer-font">{{ s.studentname_kh }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border shadow-xs">{{ s.class_code || 'N/A'
+                                    }}</span></td>
+                            <td>
+                                <span class="badge"
+                                    [ngClass]="s.gender === 'Female' ? 'bg-pink-subtle text-pink' : 'bg-blue-subtle text-blue'">
+                                    {{ s.gender }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-icon btn-light btn-sm me-1"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-icon btn-light text-danger btn-sm"
+                                    (click)="deleteStudent(s.student_id!)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Loading State -->
+            <div class="text-center py-5" *ngIf="loading()">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-secondary">Loading records...</p>
+            </div>
+            <!-- Empty State -->
+            <div class="text-center py-5" *ngIf="!loading() && students().length === 0">
+                <i class="bi bi-people display-4 text-light"></i>
+                <p class="mt-2 text-secondary">No student records found.</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+.error-page-wrapper {
+    min-height: 70vh;
+}
+
+h1.display-1 {
+    font-size: 8rem;
+    letter-spacing: -5px;
+    opacity: 0.1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+.error-icon i {
+    filter: drop-shadow(0 0 15px rgba(241, 196, 15, 0.3));
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+}
