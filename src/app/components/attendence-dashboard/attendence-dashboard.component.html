@@ -1,305 +1,215 @@
-<div class="dashboard-container p-4">
-    <!-- Header -->
-    <div class="dashboard-header mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="mb-1 fw-bold">Attendance Analytics</h1>
-                <p class="text-muted mb-0">Real-time attendance monitoring and risk assessment</p>
+<div class="attendance-module">
+    <!-- GRADIENT BACKGROUND -->
+    <div class="gradient-bg"></div>
+
+    <!-- HEADER SECTION -->
+    <div class="header-section">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="icon-wrapper">
+                    <i class="bi bi-calendar-check-fill"></i>
+                </div>
+                <div>
+                    <h2 class="module-title">Class Attendance Sheet</h2>
+                    <p class="module-subtitle">Academic Year 2025-2026 • Teacher Portal</p>
+                </div>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-secondary rounded-pill px-3" (click)="refreshDashboard()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh
+
+            <div class="header-actions">
+                <button class="btn-secondary" [disabled]="students().length === 0" (click)="saveAttendance()">
+                    <i class="bi bi-cloud-check-fill"></i>
+                    <span>Save Changes</span>
                 </button>
-                <button class="btn btn-primary rounded-pill px-3" (click)="navigateToWeeklyGrid()">
-                    <i class="bi bi-grid-3x3"></i> Weekly Grid
+
+                <button class="btn-primary" (click)="exportAttendance()">
+                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                    <span>Export PDF</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2 text-muted">Waiting for attendance data...</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error" class="alert alert-danger shadow-sm rounded-4 border-0" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
-    </div>
-
-    <!-- Dashboard Content -->
-    <div *ngIf="!loading && dashboardData" class="mt-4">
-        <!-- Summary Cards Row -->
-        <div class="row g-4 mb-4">
-            <!-- Today's Stats -->
-            <div class="col-md-3">
-                <div class="stat-card present-card shadow-sm">
-                    <div class="stat-icon">
-                        <i class="bi bi-check-circle-fill"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Present Today</h6>
-                        <h2 class="stat-value">{{ dashboardData.today.P }}</h2>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle">
-                            Rate: {{ dashboardData.today.attendance_rate }}
-                        </span>
-                    </div>
-                </div>
+    <!-- FILTER CARD -->
+    <div class="filter-card glass-card">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="bi bi-door-open-fill"></i>
+                    Select Class
+                </label>
+                <select class="filter-select" [ngModel]="selectedClassId()"
+                    (ngModelChange)="selectedClassId.set(+$event); onClassChange()">
+                    <option [value]="0">-- Choose a Class --</option>
+                    @for (cls of classes(); track cls.classid) {
+                    <option [value]="cls.classid">{{ cls.classname }}</option>
+                    }
+                </select>
             </div>
 
-            <div class="col-md-3">
-                <div class="stat-card absent-card shadow-sm">
-                    <div class="stat-icon">
-                        <i class="bi bi-x-circle-fill"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Absent Today</h6>
-                        <h2 class="stat-value">{{ dashboardData.today.A }}</h2>
-                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
-                            {{ dashboardData.today.total > 0 ? ((dashboardData.today.A / dashboardData.today.total) *
-                            100).toFixed(1) : 0 }}% Absent
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <div class="filter-group flex-grow">
+                <label class="filter-label">
+                    <i class="bi bi-calendar-range-fill"></i>
+                    Time Period
+                </label>
+                <div class="week-picker">
+                    <button class="week-nav-btn" (click)="previousWeek()" title="Previous Week">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
 
-            <div class="col-md-3">
-                <div class="stat-card late-card shadow-sm">
-                    <div class="stat-icon">
-                        <i class="bi bi-clock-fill"></i>
+                    <div class="week-display">
+                        <small class="week-label">Week Starting</small>
+                        <div class="week-date">{{ selectedWeekStart() | date:'dd/MM/yyyy' }}</div>
+                        <input type="date" class="date-picker-hidden" [ngModel]="selectedWeekStart()"
+                            (ngModelChange)="onWeekStartChange($event)" title="Select Date" />
                     </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Late Today</h6>
-                        <h2 class="stat-value">{{ dashboardData.today.L }}</h2>
-                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
-                            Tardy Students
-                        </span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-md-3">
-                <div class="stat-card excused-card shadow-sm">
-                    <div class="stat-icon">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Excused Today</h6>
-                        <h2 class="stat-value">{{ dashboardData.today.E }}</h2>
-                        <span class="badge bg-info-subtle text-info border border-info-subtle">
-                            With Permission
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <button class="week-nav-btn" (click)="nextWeek()" title="Next Week">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
 
-        <!-- Main Content Row -->
-        <div class="row g-4 mb-4">
-            <!-- Trends -->
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0 fw-bold">
-                            <i class="bi bi-graph-up text-primary me-2"></i> Attendance Trends
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Period Comparison -->
-                        <div class="row text-center mb-4">
-                            <div class="col-4 border-end">
-                                <h6 class="text-muted small text-uppercase fw-bold">Today</h6>
-                                <h3 class="mb-1 fw-bold text-primary">{{ dashboardData.today.total }}</h3>
-                                <span [class]="'badge bg-' + getStatusColor(dashboardData.today.attendance_rate)">
-                                    {{ dashboardData.today.attendance_rate }}
-                                </span>
-                            </div>
-                            <div class="col-4 border-end">
-                                <h6 class="text-muted small text-uppercase fw-bold">This Week</h6>
-                                <h3 class="mb-1 fw-bold text-primary">{{ dashboardData.this_week.total }}</h3>
-                                <span [class]="'badge bg-' + getStatusColor(dashboardData.this_week.attendance_rate)">
-                                    {{ dashboardData.this_week.attendance_rate }}
-                                </span>
-                            </div>
-                            <div class="col-4">
-                                <h6 class="text-muted small text-uppercase fw-bold">This Month</h6>
-                                <h3 class="mb-1 fw-bold text-primary">{{ dashboardData.this_month.total }}</h3>
-                                <span [class]="'badge bg-' + getStatusColor(dashboardData.this_month.attendance_rate)">
-                                    {{ dashboardData.this_month.attendance_rate }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Status Distribution Bars -->
-                        <div class="status-bars p-2">
-                            <div class="status-bar-item mb-3">
-                                <div class="d-flex justify-content-between mb-1 small">
-                                    <span class="fw-medium">Present</span>
-                                    <span class="text-success badge bg-success-subtle">{{ dashboardData.today.P }}
-                                        Sessions</span>
-                                </div>
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-success"
-                                        [style.width.%]="dashboardData.today.total > 0 ? (dashboardData.today.P / dashboardData.today.total) * 100 : 0">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="status-bar-item mb-3">
-                                <div class="d-flex justify-content-between mb-1 small">
-                                    <span class="fw-medium">Absent</span>
-                                    <span class="text-danger badge bg-danger-subtle">{{ dashboardData.today.A }}
-                                        Sessions</span>
-                                </div>
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-danger"
-                                        [style.width.%]="dashboardData.today.total > 0 ? (dashboardData.today.A / dashboardData.today.total) * 100 : 0">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="status-bar-item mb-3">
-                                <div class="d-flex justify-content-between mb-1 small">
-                                    <span class="fw-medium">Late</span>
-                                    <span class="text-warning badge bg-warning-subtle">{{ dashboardData.today.L }}
-                                        Sessions</span>
-                                </div>
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-warning"
-                                        [style.width.%]="dashboardData.today.total > 0 ? (dashboardData.today.L / dashboardData.today.total) * 100 : 0">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="status-bar-item">
-                                <div class="d-flex justify-content-between mb-1 small">
-                                    <span class="fw-medium">Excused</span>
-                                    <span class="text-info badge bg-info-subtle">{{ dashboardData.today.E }}
-                                        Sessions</span>
-                                </div>
-                                <div class="progress rounded-pill" style="height: 10px;">
-                                    <div class="progress-bar bg-info"
-                                        [style.width.%]="dashboardData.today.total > 0 ? (dashboardData.today.E / dashboardData.today.total) * 100 : 0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Today's Summary Doughnut Replacement -->
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0 fw-bold">
-                            <i class="bi bi-pie-chart text-primary me-2"></i> Today's Summary
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                        <div class="summary-radial mb-4 position-relative d-flex align-items-center justify-content-center"
-                            style="width: 150px; height: 150px; border-radius: 50%; border: 15px solid #f8f9fa;">
-                            <div class="text-center">
-                                <h1 class="mb-0 fw-bold">{{ dashboardData.today.attendance_rate }}</h1>
-                                <small class="text-muted d-block">Overall Rate</small>
-                            </div>
-                        </div>
-                        <div class="summary-legend w-100 mt-2">
-                            <div class="legend-item d-flex align-items-center justify-content-between p-2 border-bottom"
-                                *ngFor="let item of statusDistribution">
-                                <div class="d-flex align-items-center">
-                                    <span class="legend-color me-2" [style.background-color]="item.color"
-                                        style="width: 12px; height: 12px; border-radius: 3px; display: inline-block;"></span>
-                                    <span class="legend-label small fw-medium text-secondary">{{ item.name }}</span>
-                                </div>
-                                <span class="legend-value fw-bold">{{ item.value }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Row -->
-        <div class="row g-4">
-            <!-- Students at Risk -->
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0 fw-bold">
-                            <i class="bi bi-exclamation-triangle text-danger me-2"></i> Students at Risk
-                            <span class="badge bg-danger ms-2 rounded-pill">{{ dashboardData.students_at_risk.length
-                                }}</span>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div *ngIf="dashboardData.students_at_risk.length === 0" class="text-center py-5 text-muted">
-                            <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
-                            <p class="mb-0">No students at risk. Everything looks good!</p>
-                        </div>
-                        <div class="risk-list" *ngIf="dashboardData.students_at_risk.length > 0">
-                            <div class="risk-item d-flex align-items-center justify-content-between p-3 border rounded-4 mb-2 hover-shadow"
-                                *ngFor="let student of dashboardData.students_at_risk.slice(0, 5)">
-                                <div class="risk-student-info d-flex align-items-center">
-                                    <div class="risk-avatar bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                        style="width: 40px; height: 40px;">
-                                        <i class="bi bi-person"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold">{{ student.student_name_eng }}</h6>
-                                        <small class="text-muted">{{ student.student_name_kh }}</small>
-                                    </div>
-                                </div>
-                                <div class="risk-stats text-end">
-                                    <span [class]="'badge rounded-pill ' + getRiskBadgeClass(student.attendance_rate)">
-                                        {{ student.attendance_rate }}
-                                    </span>
-                                    <small class="text-muted d-block mt-1">
-                                        {{ student.days_present }}/{{ student.total_days }} days
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Absences -->
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="card-title mb-0 fw-bold">
-                            <i class="bi bi-calendar-x text-warning me-2"></i> Recent Absences
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div *ngIf="dashboardData.recent_absences.length === 0" class="text-center py-5 text-muted">
-                            <i class="bi bi-calendar-check-fill text-success display-4 mb-3"></i>
-                            <p class="mb-0">No recent absences recorded.</p>
-                        </div>
-                        <div class="absence-list" *ngIf="dashboardData.recent_absences.length > 0">
-                            <div class="absence-item d-flex align-items-center p-3 border rounded-4 mb-2 hover-shadow"
-                                *ngFor="let absence of dashboardData.recent_absences.slice(0, 5)">
-                                <div class="absence-date text-center bg-light rounded-3 p-2 me-3"
-                                    style="min-width: 60px;">
-                                    <div class="fw-bold">{{ absence.attendance_date | date:'dd' }}</div>
-                                    <small class="text-uppercase text-muted">{{ absence.attendance_date | date:'MMM'
-                                        }}</small>
-                                </div>
-                                <div class="absence-info flex-grow-1">
-                                    <h6 class="mb-0 fw-bold">{{ absence.student.student_name_eng }}</h6>
-                                    <small class="text-muted d-block">{{ absence.student.student_name_kh }}</small>
-                                    <p class="mb-0 mt-1" *ngIf="absence.notes">
-                                        <small class="text-info"><i class="bi bi-chat-left-text me-1"></i> {{
-                                            absence.notes }}</small>
-                                    </p>
-                                </div>
-                                <div class="badge bg-danger-subtle text-danger rounded-pill">Absent</div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Simplified: Jump to Current Week logic handled in TS reload method if needed, but here using local trigger -->
+                    <button class="today-btn" (click)="selectedWeekStart.set(getCurrentWeekStart()); onClassChange()"
+                        title="Jump to Current Week">
+                        <i class="bi bi-calendar-event-fill"></i>
+                        <span>Today</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
+    @if (selectedClassId() > 0) {
+    <!-- ATTENDANCE TABLE CARD -->
+    <div class="data-card glass-card">
+        <div class="card-header-custom">
+            <div class="header-info">
+                <h5 class="class-title">
+                    <i class="bi bi-people-fill"></i>
+                    {{ getSelectedClassName() }}
+                </h5>
+                <div class="teacher-info">
+                    <i class="bi bi-person-badge-fill"></i>
+                    Teacher: <span class="teacher-name">{{ getSelectedTeacherName() }}</span>
+                </div>
+            </div>
+            <span class="view-badge">Weekly View</span>
+        </div>
+
+        @if (loading()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Fetching class records...</p>
+        </div>
+        } @else {
+        <div class="table-wrapper">
+            <table class="attendance-table">
+                <thead>
+                    <!-- Row 1: Days -->
+                    <tr>
+                        <th rowspan="2" class="fixed-col col-number">No</th>
+                        <th rowspan="2" class="fixed-col col-student">Student Name</th>
+                        <th rowspan="2" class="fixed-col col-gender">Sex</th>
+
+                        @for (day of weeklySchedule; track day.day; let i = $index) {
+                        <th colspan="3" class="day-header">
+                            <div class="day-name">{{ day.day }}</div>
+                            <div class="day-date">{{ attendanceDates()[i] | date: 'dd/MM/yyyy' }}</div>
+                        </th>
+                        }
+                        <th rowspan="2" class="col-total">Total</th>
+                    </tr>
+                    <!-- Row 2: Subjects -->
+                    <tr style="height: 130px;">
+                        @for (day of weeklySchedule; track day.day) {
+                        @for (slot of day.slots; track slot.id; let slotIndex = $index) {
+                        <th class="subject-header" [class.day-separator]="slotIndex === 2">
+                            <p class="subject-text">
+                                {{ slot.name }}
+                            </p>
+                        </th>
+                        }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (student of students(); track student.studentid; let i = $index) {
+                    <tr class="student-row">
+                        <td class="student-number">{{ i + 1 }}</td>
+                        <td class="student-name-cell">
+                            <div class="student-name-primary">{{ student.studentname_kh }}</div>
+                            <div class="student-name-secondary">{{ student.studentname_eng }}</div>
+                        </td>
+                        <td class="student-gender">
+                            <span class="gender-badge" [class.badge-male]="student.gender === 'M'"
+                                [class.badge-female]="student.gender === 'F'">
+                                {{ student.gender }}
+                            </span>
+                        </td>
+
+                        @for (day of weeklySchedule; track day.day; let dIndex = $index) {
+                        @for (slot of day.slots; track slot.id; let slotIndex = $index) {
+                        <td class="attendance-cell-wrapper" [class.day-separator]="slotIndex === 2">
+                            <div class="attendance-cell"
+                                (click)="toggleAttendance(student.studentid, attendanceDates()[dIndex], slot.id)">
+                                @if (getAttendanceStatus(student.studentid, attendanceDates()[dIndex], slot.id) ===
+                                'present') {
+                                <i class="bi bi-check-circle-fill status-present"></i>
+                                } @else if (getAttendanceStatus(student.studentid, attendanceDates()[dIndex], slot.id)
+                                === 'absent') {
+                                <i class="bi bi-x-circle-fill status-absent"></i>
+                                } @else {
+                                <span class="status-empty">•</span>
+                                }
+                            </div>
+                        </td>
+                        }
+                        }
+
+                        <td class="total-cell">{{ getPresentCount(student.studentid) }}</td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td [attr.colspan]="(weeklySchedule.length * 3) + 4" class="empty-state">
+                            <div class="empty-content">
+                                <i class="bi bi-people"></i>
+                                <p>No students found in the database for this class</p>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- STATISTICS FOOTER -->
+        <div class="stats-footer">
+            <div class="stat-item">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value">{{ attendanceStats().totalStudents }}</div>
+            </div>
+            <div class="stat-item stat-present">
+                <div class="stat-label">Present</div>
+                <div class="stat-value">{{ attendanceStats().present }}</div>
+            </div>
+            <div class="stat-item stat-absent">
+                <div class="stat-label">Absent</div>
+                <div class="stat-value">{{ attendanceStats().absent }}</div>
+            </div>
+            <div class="stat-item stat-rate">
+                <div class="stat-label">Attendance Rate</div>
+                <div class="stat-value">{{ attendanceStats().percentage }}%</div>
+            </div>
+        </div>
+        }
+    </div>
+    } @else {
+    <!-- EMPTY STATE -->
+    <div class="empty-state-card glass-card">
+        <div class="empty-state-content">
+            <i class="bi bi-calendar-range"></i>
+            <h4>Weekly Schedule View</h4>
+            <p>Select a class to view the full weekly schedule (Mon-Sat)</p>
+        </div>
+    </div>
+    }
 </div>

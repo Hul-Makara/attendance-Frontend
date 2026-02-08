@@ -1,237 +1,220 @@
 :root {
-    --primary-main: #4361ee;
-    --primary-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-    --bg-main: #f8f9fc;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    --text-main: #2b2d42;
-    --text-muted: #8d99ae;
-
-    --present-color: #06d6a0;
-    --present-bg: rgba(6, 214, 160, 0.1);
-    --absent-color: #ef476f;
-    --absent-bg: rgba(239, 71, 111, 0.1);
-    --late-color: #ffd166;
-    --late-bg: rgba(255, 209, 102, 0.1);
-    --excused-color: #118ab2;
-    --excused-bg: rgba(17, 138, 178, 0.1);
+    --primary: #4361ee;
+    --primary-dark: #3a0ca3;
+    --bg: #f8f9fc;
+    --glass: rgba(255, 255, 255, .7);
+    --shadow: 0 10px 30px rgba(0, 0, 0, .05);
+    --text: #2b2d42;
+    --muted: #8d99ae;
+    --present: #06d6a0;
+    --absent: #ef476f;
+    --late: #f39c12;
+    --excused: #118ab2
 }
 
 .attendance-container {
-    background-color: var(--bg-main);
+    background: var(--bg);
     min-height: 100vh;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: var(--text-main);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    color: var(--text)
 }
 
-/* Glassmorphism Header */
 .header-section {
-    background: var(--glass-bg);
+    background: var(--glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
+    border: 1px solid rgba(255, 255, 255, .2);
     border-radius: 24px;
     padding: 2rem;
-    box-shadow: var(--card-shadow);
+    box-shadow: var(--shadow)
 }
 
 .main-title {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -.5px
 }
 
-/* Premium Controls Card */
 .controls-card {
-    background: #ffffff;
+    background: #fff;
     border-radius: 20px;
     padding: 1.5rem;
-    border: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .03);
+    transition: transform .3s
 }
 
 .controls-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px)
 }
 
 .modern-select,
 .modern-input {
     border: 1.5px solid #edf2f4;
     border-radius: 12px;
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    background-color: #fff;
+    padding: .6rem 1rem;
+    font-size: .9rem;
+    transition: all .2s;
+    background: #fff
 }
 
 .modern-select:focus,
 .modern-input:focus {
-    border-color: var(--primary-main);
-    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, .1);
+    outline: 0
 }
 
-/* Table Area Redesign */
 .attendance-card {
-    background: #ffffff;
+    background: #fff;
     border-radius: 24px;
-    border: none;
-    box-shadow: var(--card-shadow);
-    overflow: hidden;
+    box-shadow: var(--shadow);
+    overflow: hidden
 }
 
 .attendance-table {
     border-collapse: separate;
-    border-spacing: 0;
+    border-spacing: 0
 }
 
 .attendance-table thead th {
     background: #fdfdfe;
     border-bottom: 2px solid #f1f3f7;
-    color: var(--text-muted);
+    color: var(--muted);
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: .75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     padding: 1.2rem 1rem;
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 10
 }
 
 .student-info-col {
     min-width: 280px;
     background: #fff;
     left: 0;
-    z-index: 11;
+    z-index: 11
 }
 
 .student-row {
-    transition: all 0.2s ease;
+    transition: all .2s
 }
 
 .student-row:hover {
-    background-color: #f8faff !important;
+    background: #f8faff !important
 }
 
 .student-name-eng {
-    font-size: 0.95rem;
-    color: var(--text-main);
-    font-weight: 700;
+    font-size: .95rem;
+    color: var(--text);
+    font-weight: 700
 }
 
 .student-name-kh {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    font-size: .8rem;
+    color: var(--muted)
 }
 
-/* Attendance Cells - Interactive & Clean */
 .attendance-cell {
     width: 60px;
     height: 60px;
     padding: 0 !important;
     cursor: pointer;
     vertical-align: middle;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all .2s cubic-bezier(.4, 0, .2, 1);
     position: relative;
-    border: 0.5px solid #f8f9fa;
+    border: .5px solid #f8f9fa
 }
 
 .attendance-cell:hover {
-    background-color: #f1f3f5;
+    background: #f1f3f5;
     z-index: 2;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, .05);
     transform: scale(1.05);
-    border-radius: 8px;
+    border-radius: 8px
 }
 
 .cell-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    width: 100%;
+    height: 100%
 }
 
 .status-symbol {
     font-size: 1.1rem;
-    font-weight: 800;
+    font-weight: 800
 }
 
-/* Status Optimized Colors */
 .status-present {
-    color: var(--present-color);
-    background-color: var(--present-bg) !important;
+    color: var(--present);
+    background: rgba(6, 214, 160, .1) !important
 }
 
 .status-absent {
-    color: var(--absent-color);
-    background-color: var(--absent-bg) !important;
+    color: var(--absent);
+    background: rgba(239, 71, 111, .1) !important
 }
 
 .status-late {
-    color: #f39c12;
-    background-color: rgba(243, 156, 18, 0.1) !important;
+    color: var(--late);
+    background: rgba(243, 156, 18, .1) !important
 }
 
 .status-excused {
-    color: var(--excused-color);
-    background-color: var(--excused-bg) !important;
+    color: var(--excused);
+    background: rgba(17, 138, 178, .1) !important
 }
 
 .attendance-cell.bulk-mode-active {
-    background-color: #fff4e6 !important;
-    border: 1px dashed #fd7e14;
+    background: #fff4e6 !important;
+    border: 1px dashed #fd7e14
 }
 
 .attendance-cell.pending {
-    border: 2px solid var(--warning) !important;
-    animation: pulse-yellow 2s infinite;
+    border: 2px solid #ffc107 !important;
+    animation: pulse 2s infinite
 }
 
-@keyframes pulse-yellow {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, .4)
     }
 
     70% {
-        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0)
     }
 }
 
-/* Date Header Design */
 .date-header {
-    text-align: center;
+    text-align: center
 }
 
 .day-name {
-    font-size: 0.65rem;
+    font-size: .65rem;
     display: block;
-    margin-bottom: 2px;
+    margin-bottom: 2px
 }
 
 .day-num {
     font-size: 1.1rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text)
 }
 
 .today-col {
-    background-color: rgba(67, 97, 238, 0.03) !important;
+    background: rgba(67, 97, 238, .03) !important
 }
 
 .today-col .day-num {
-    color: var(--primary-main);
-    position: relative;
+    color: var(--primary);
+    position: relative
 }
 
 .today-col .day-num::after {
@@ -242,56 +225,53 @@
     transform: translateX(-50%);
     width: 4px;
     height: 4px;
-    background: var(--primary-main);
-    border-radius: 50%;
+    background: var(--primary);
+    border-radius: 50%
 }
 
-/* Actions Sidebar/Buttons */
 .action-btn {
     border-radius: 14px;
-    padding: 0.6rem 1.2rem;
+    padding: .6rem 1.2rem;
     font-weight: 600;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
-    border: none;
+    font-size: .85rem;
+    transition: all .3s;
+    border: 0
 }
 
 .btn-premium-primary {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: #fff;
-    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, .3)
 }
 
 .btn-premium-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
-    color: #fff;
+    box-shadow: 0 6px 20px rgba(67, 97, 238, .4);
+    color: #fff
 }
 
-/* Search Bar Redesign */
 .search-wrapper {
     background: #fff;
     border-radius: 16px;
     padding: 4px 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    border: 1px solid #edf2f4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+    border: 1px solid #edf2f4
 }
 
 .search-input {
-    border: none !important;
+    border: 0 !important;
     background: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none !important
 }
 
-/* Missing Components for Redesign */
 .bulk-action-panel {
     min-width: 600px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, .1)
 }
 
 .avatar-circle {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    border: 2px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .05);
+    border: 2px solid #fff
 }
 
 .dot-indicator {
@@ -299,71 +279,49 @@
     height: 8px;
     border-radius: 50%;
     margin: 4px;
-    display: inline-block;
+    display: inline-block
 }
 
 .custom-checkbox {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 6px !important;
-    cursor: pointer;
+    cursor: pointer
 }
 
 .custom-checkbox:checked {
-    background-color: var(--primary-main);
-    border-color: var(--primary-main);
+    background: var(--primary);
+    border-color: var(--primary)
 }
 
-/* Stats Badges */
 .stat-badge {
-    padding: 0.35rem 0.7rem;
+    padding: .35rem .7rem;
     border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: .75rem;
+    font-weight: 800
 }
 
 .bg-p {
-    background: rgba(6, 214, 160, 0.1);
-    color: #06d6a0;
+    background: rgba(6, 214, 160, .1);
+    color: var(--present)
 }
 
 .bg-a {
-    color: var(--absent-color);
-    background: var(--absent-bg);
+    color: var(--absent);
+    background: rgba(239, 71, 111, .1)
 }
 
-/* Custom Scrollbar */
-.table-responsive::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
-}
-
-.table-responsive::-webkit-scrollbar-track {
-    background: #f1f3f7;
-    border-radius: 10px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-    background: #cfd8dc;
-    border-radius: 10px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb:hover {
-    background: #b0bec5;
-}
-
-/* Modal Styling */
 .modal-content {
     border-radius: 28px;
-    border: none;
-    overflow: hidden;
+    border: 0;
+    overflow: hidden
 }
 
 .modal-header {
-    background: var(--primary-gradient);
-    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 2rem
 }
 
 .modal-body {
-    padding: 2.5rem;
+    padding: 2.5rem
 }
